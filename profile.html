@@ -6,26 +6,186 @@
     <title>Setup Profile - Vidyasetu</title>
     <link rel="stylesheet" href="style.css">
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+
+    <style>
+        .mobile-menu-btn { display: none; }
+
+        @media (max-width: 900px) {
+            html, body { overflow-x: hidden; }
+
+            .navbar {
+                position: sticky !important;
+                top: 0;
+                z-index: 1000 !important;
+                padding: .75rem 1rem !important;
+                display: flex;
+                align-items: center;
+                gap: .5rem;
+            }
+
+            .navbar .logo {
+                margin-right: auto;
+                white-space: nowrap;
+                font-size: 1.2rem;
+            }
+
+            .mobile-menu-btn {
+                display: inline-flex;
+                align-items: center;
+                justify-content: center;
+                border: 0;
+                background: transparent;
+                color: var(--text-color);
+                font-size: 1.5rem;
+                cursor: pointer;
+                padding: .4rem;
+                line-height: 1;
+            }
+
+            .navbar nav {
+                display: none !important;
+                position: absolute;
+                top: 100%;
+                left: .75rem;
+                right: .75rem;
+                flex-direction: column;
+                align-items: stretch;
+                gap: .35rem;
+                padding: .75rem;
+                border-radius: 14px;
+                background: var(--card-bg);
+                border: 1px solid var(--border-color);
+                box-shadow: 0 12px 30px rgba(0,0,0,.15);
+                z-index: 1100;
+            }
+
+            .navbar nav.active-mobile-menu { display: flex !important; }
+
+            .navbar nav a,
+            .navbar nav > div {
+                width: 100%;
+                box-sizing: border-box;
+            }
+
+            .navbar nav a {
+                display: block;
+                padding: .7rem .75rem;
+                text-decoration: none;
+            }
+
+            .form-section {
+                width: 100%;
+                min-height: calc(100dvh - 60px);
+                box-sizing: border-box;
+                padding: 1.25rem .75rem 2rem !important;
+                display: flex;
+                align-items: flex-start;
+            }
+
+            .form-container {
+                width: 100% !important;
+                max-width: 560px !important;
+                margin: 0 auto;
+                box-sizing: border-box;
+                padding: 1.25rem !important;
+            }
+
+            .form-container h2 {
+                font-size: clamp(1.45rem, 6vw, 2rem);
+                line-height: 1.2;
+            }
+
+            .form-container > p {
+                font-size: .9rem;
+                line-height: 1.55;
+            }
+
+            .wizard-steps-indicator {
+                width: 100%;
+                overflow-x: auto;
+                scrollbar-width: thin;
+                display: flex !important;
+                gap: .5rem !important;
+                padding-bottom: .35rem;
+            }
+
+            .step-indicator {
+                flex: 1 0 auto;
+                min-width: 105px;
+                font-size: .78rem;
+                text-align: center;
+                white-space: nowrap;
+            }
+
+            .input-group {
+                width: 100%;
+            }
+
+            .input-group input,
+            .input-group select {
+                width: 100% !important;
+                max-width: 100%;
+                min-width: 0;
+                box-sizing: border-box;
+                font-size: 16px;
+            }
+
+            .form-btn-group {
+                flex-direction: column !important;
+                gap: .75rem !important;
+            }
+
+            .form-btn-group .btn-primary,
+            .form-btn-group .btn-secondary,
+            .wizard-step > .btn-primary {
+                width: 100% !important;
+                min-height: 46px;
+                box-sizing: border-box;
+            }
+        }
+
+        @media (max-width: 520px) {
+            .navbar { padding: .7rem .85rem !important; }
+
+            .form-section {
+                padding: .85rem .65rem 1.5rem !important;
+            }
+
+            .form-container {
+                padding: 1rem !important;
+                border-radius: 14px;
+            }
+
+            .wizard-steps-indicator {
+                margin-bottom: 1rem;
+            }
+
+            .step-indicator {
+                min-width: 95px;
+                font-size: .72rem;
+            }
+        }
+    </style>
 </head>
 <body>
 
-    <!-- Navbar -->
     <header class="navbar">
         <div class="logo">Vidya<span>setu</span></div>
-        <nav>
+
+        <button class="mobile-menu-btn" id="mobileMenuBtn" aria-label="Toggle navigation" aria-expanded="false">☰</button>
+
+        <nav id="profileNav">
             <a href="index.html">Home</a>
             <a href="dashboard.html">Dashboard</a>
             <div id="authLinkContainer"></div>
         </nav>
     </header>
 
-    <!-- Multi-Step Form Section -->
     <section class="form-section">
         <div class="form-container">
             <h2>Setup Your Scholarship Profile</h2>
-            <p>Tell us a bit about yourself so our matching engine can find 100% eligible grants for you.</p>
+            <p>Tell us a bit about yourself so our matching engine can find scholarships that may be eligible for your profile.</p>
 
-            <!-- Progress Indicator -->
             <div class="wizard-steps-indicator">
                 <div class="step-indicator active" id="ind-1">1. Basic Info</div>
                 <div class="step-indicator" id="ind-2">2. Academic</div>
@@ -33,8 +193,6 @@
             </div>
 
             <form id="profileForm">
-                
-                <!-- STEP 1: Basic Information -->
                 <div class="wizard-step active-step" id="step-1">
                     <div class="input-group">
                         <label for="name">Full Name</label>
@@ -67,7 +225,6 @@
                     <button type="button" class="btn-primary full-width" onclick="nextStep(2)">Next Step &rarr;</button>
                 </div>
 
-                <!-- STEP 2: Academic Information -->
                 <div class="wizard-step" id="step-2" style="display: none;">
                     <div class="input-group">
                         <label for="course">Current Course / Class</label>
@@ -94,7 +251,6 @@
                     </div>
                 </div>
 
-                <!-- STEP 3: Financial Information -->
                 <div class="wizard-step" id="step-3" style="display: none;">
                     <div class="input-group">
                         <label for="income">Annual Family Income (₹)</label>
@@ -105,11 +261,37 @@
                         <button type="submit" class="btn-primary full-width" style="background-color: #16a34a;">Save & Find Matches 🎉</button>
                     </div>
                 </div>
-
             </form>
         </div>
     </section>
 
     <script src="script.js"></script>
+    <script>
+        (() => {
+            const btn = document.getElementById('mobileMenuBtn');
+            const nav = document.getElementById('profileNav');
+
+            if (btn && nav) {
+                btn.addEventListener('click', () => {
+                    const open = nav.classList.toggle('active-mobile-menu');
+                    btn.setAttribute('aria-expanded', String(open));
+                });
+
+                nav.querySelectorAll('a').forEach(link => {
+                    link.addEventListener('click', () => {
+                        nav.classList.remove('active-mobile-menu');
+                        btn.setAttribute('aria-expanded', 'false');
+                    });
+                });
+            }
+
+            window.addEventListener('resize', () => {
+                if (window.innerWidth > 900) {
+                    nav?.classList.remove('active-mobile-menu');
+                    btn?.setAttribute('aria-expanded', 'false');
+                }
+            });
+        })();
+    </script>
 </body>
 </html>
