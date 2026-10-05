@@ -2618,161 +2618,286 @@ document.addEventListener("DOMContentLoaded", () => {
 });
 
 
+```javascript
 /* ==========================================================
-   VIDYASETU MOBILE NAVIGATION + SIDEBAR
-   Add this block at the VERY END of script.js
+   VIDYASETU MOBILE NAVIGATION - FIXED VERSION
+   Paste at the VERY END of script.js
    ========================================================== */
 
-(function initVidyasetuMobileNavigation() {
-    function setupMobileNavigation() {
+(function () {
 
-        /* -------------------------------
+    function initMobileNavigation() {
+
+        /* =========================
            MOBILE TOP NAVIGATION
-        -------------------------------- */
+        ========================== */
 
-        const mobileMenuBtn = document.getElementById("mobileMenuBtn");
+        const menuBtn =
+            document.getElementById("mobileMenuBtn");
 
-        // Works with both:
-        // <nav class="nav-links">
-        // and
-        // <nav id="profileNav">
-        const mobileNav =
+        const nav =
             document.querySelector(".navbar .nav-links") ||
             document.querySelector(".navbar nav");
 
-        if (mobileMenuBtn && mobileNav) {
-
-            // Prevent duplicate listeners
-            if (!mobileMenuBtn.dataset.mobileNavReady) {
-
-                mobileMenuBtn.dataset.mobileNavReady = "true";
-
-                mobileMenuBtn.addEventListener("click", function (event) {
-                    event.stopPropagation();
-
-                    const isOpen =
-                        mobileNav.classList.toggle("active-mobile-menu");
-
-                    mobileMenuBtn.setAttribute(
-                        "aria-expanded",
-                        String(isOpen)
-                    );
-
-                    // Change hamburger icon
-                    if (isOpen) {
-                        mobileMenuBtn.textContent = "✕";
-                    } else {
-                        mobileMenuBtn.textContent = "☰";
-                    }
-                });
-
-                // Close menu when a navigation link is clicked
-                mobileNav.querySelectorAll("a").forEach(function (link) {
-                    link.addEventListener("click", function () {
-                        closeMobileNav();
-                    });
-                });
-            }
+        if (!menuBtn || !nav) {
+            return;
         }
 
-        function closeMobileNav() {
-            if (!mobileNav) return;
-
-            mobileNav.classList.remove("active-mobile-menu");
-
-            if (mobileMenuBtn) {
-                mobileMenuBtn.setAttribute("aria-expanded", "false");
-                mobileMenuBtn.textContent = "☰";
-            }
+        /*
+         * Remove any old click handler created by this
+         * script before adding a new one.
+         */
+        if (menuBtn._vidyaSet) {
+            return;
         }
 
-        /* -------------------------------
-           CLOSE NAV WHEN CLICKING OUTSIDE
-        -------------------------------- */
+        menuBtn._vidyaSet = true;
 
-        document.addEventListener("click", function (event) {
 
-            if (!mobileNav || !mobileMenuBtn) return;
+        function openNav() {
+
+            nav.classList.add(
+                "active-mobile-menu"
+            );
+
+            menuBtn.setAttribute(
+                "aria-expanded",
+                "true"
+            );
+
+            menuBtn.textContent = "✕";
+        }
+
+
+        function closeNav() {
+
+            nav.classList.remove(
+                "active-mobile-menu"
+            );
+
+            menuBtn.setAttribute(
+                "aria-expanded",
+                "false"
+            );
+
+            menuBtn.textContent = "☰";
+        }
+
+
+        function toggleNav(event) {
+
+            if (event) {
+                event.preventDefault();
+                event.stopPropagation();
+            }
 
             if (
-                mobileNav.classList.contains("active-mobile-menu") &&
-                !mobileNav.contains(event.target) &&
-                !mobileMenuBtn.contains(event.target)
+                nav.classList.contains(
+                    "active-mobile-menu"
+                )
             ) {
-                closeMobileNav();
+                closeNav();
+            } else {
+                openNav();
             }
-        });
-
-
-        /* -------------------------------
-           MOBILE SIDEBAR
-        -------------------------------- */
-
-        const sidebar =
-            document.querySelector(".sidebar");
-
-        if (!sidebar) return;
+        }
 
 
         /*
-         * Create mobile sidebar button if it
-         * does not already exist.
+         * IMPORTANT:
+         * Use pointerup instead of only click.
+         * This makes the hamburger work reliably on
+         * mobile touch screens.
          */
-        let sidebarToggle =
-            document.querySelector(".sidebar-toggle");
+        menuBtn.addEventListener(
+            "pointerup",
+            toggleNav
+        );
 
-        if (!sidebarToggle) {
 
-            sidebarToggle = document.createElement("button");
+        /*
+         * Navigation links close the menu.
+         */
+        nav.querySelectorAll("a").forEach(
+            function (link) {
 
-            sidebarToggle.className = "sidebar-toggle";
-            sidebarToggle.type = "button";
+                link.addEventListener(
+                    "click",
+                    function () {
+                        closeNav();
+                    }
+                );
 
-            sidebarToggle.innerHTML =
+            }
+        );
+
+
+        /*
+         * Clicking outside the menu closes it.
+         */
+        document.addEventListener(
+            "pointerup",
+            function (event) {
+
+                if (
+                    !nav.classList.contains(
+                        "active-mobile-menu"
+                    )
+                ) {
+                    return;
+                }
+
+                if (
+                    nav.contains(event.target) ||
+                    menuBtn.contains(event.target)
+                ) {
+                    return;
+                }
+
+                closeNav();
+            }
+        );
+
+
+        /*
+         * Escape key.
+         */
+        document.addEventListener(
+            "keydown",
+            function (event) {
+
+                if (
+                    event.key === "Escape"
+                ) {
+                    closeNav();
+                }
+
+            }
+        );
+
+
+        /*
+         * When going back to desktop,
+         * automatically close mobile menu.
+         */
+        window.addEventListener(
+            "resize",
+            function () {
+
+                if (
+                    window.innerWidth > 900
+                ) {
+                    closeNav();
+                }
+
+            }
+        );
+
+
+        /* =========================
+           MOBILE SIDEBAR
+        ========================== */
+
+        const sidebar =
+            document.querySelector(
+                ".sidebar"
+            );
+
+        if (!sidebar) {
+            return;
+        }
+
+
+        let sidebarBtn =
+            document.querySelector(
+                ".sidebar-toggle"
+            );
+
+
+        /*
+         * Create sidebar button if
+         * dashboard does not already have one.
+         */
+        if (!sidebarBtn) {
+
+            sidebarBtn =
+                document.createElement(
+                    "button"
+                );
+
+            sidebarBtn.type = "button";
+
+            sidebarBtn.className =
+                "sidebar-toggle";
+
+            sidebarBtn.innerHTML =
                 "☰ <span>Explore Filters</span>";
 
-            sidebar.parentElement.insertBefore(
-                sidebarToggle,
+            sidebar.parentNode.insertBefore(
+                sidebarBtn,
                 sidebar
             );
         }
 
 
         /*
-         * Create overlay
+         * Create overlay.
          */
-        let sidebarOverlay =
-            document.querySelector(".sidebar-overlay");
+        let overlay =
+            document.querySelector(
+                ".sidebar-overlay"
+            );
 
-        if (!sidebarOverlay) {
+        if (!overlay) {
 
-            sidebarOverlay =
-                document.createElement("div");
+            overlay =
+                document.createElement(
+                    "div"
+                );
 
-            sidebarOverlay.className =
+            overlay.className =
                 "sidebar-overlay";
 
             document.body.appendChild(
-                sidebarOverlay
+                overlay
             );
         }
 
 
         /*
-         * Create mobile sidebar header
+         * Create sidebar close button.
          */
-        let sidebarHeader =
-            sidebar.querySelector(".sidebar-mobile-header");
+        let closeBtn =
+            sidebar.querySelector(
+                ".sidebar-close"
+            );
 
-        if (!sidebarHeader) {
 
-            sidebarHeader =
-                document.createElement("div");
+        if (!closeBtn) {
 
-            sidebarHeader.className =
-                "sidebar-mobile-header";
+            let header =
+                sidebar.querySelector(
+                    ".sidebar-mobile-header"
+                );
 
-            sidebarHeader.innerHTML = `
+            if (!header) {
+
+                header =
+                    document.createElement(
+                        "div"
+                    );
+
+                header.className =
+                    "sidebar-mobile-header";
+
+                sidebar.insertBefore(
+                    header,
+                    sidebar.firstChild
+                );
+            }
+
+
+            header.innerHTML = `
                 <h3>📂 Quick Browse</h3>
 
                 <button
@@ -2784,20 +2909,12 @@ document.addEventListener("DOMContentLoaded", () => {
                 </button>
             `;
 
-            sidebar.insertBefore(
-                sidebarHeader,
-                sidebar.firstChild
-            );
+            closeBtn =
+                header.querySelector(
+                    ".sidebar-close"
+                );
         }
 
-
-        const sidebarClose =
-            sidebar.querySelector(".sidebar-close");
-
-
-        /* -------------------------------
-           OPEN SIDEBAR
-        -------------------------------- */
 
         function openSidebar() {
 
@@ -2805,26 +2922,15 @@ document.addEventListener("DOMContentLoaded", () => {
                 "sidebar-open"
             );
 
-            sidebarOverlay.classList.add(
+            overlay.classList.add(
                 "sidebar-overlay-visible"
             );
 
             document.body.classList.add(
                 "sidebar-lock"
             );
-
-            if (sidebarToggle) {
-                sidebarToggle.setAttribute(
-                    "aria-expanded",
-                    "true"
-                );
-            }
         }
 
-
-        /* -------------------------------
-           CLOSE SIDEBAR
-        -------------------------------- */
 
         function closeSidebar() {
 
@@ -2832,39 +2938,31 @@ document.addEventListener("DOMContentLoaded", () => {
                 "sidebar-open"
             );
 
-            sidebarOverlay.classList.remove(
+            overlay.classList.remove(
                 "sidebar-overlay-visible"
             );
 
             document.body.classList.remove(
                 "sidebar-lock"
             );
-
-            if (sidebarToggle) {
-                sidebarToggle.setAttribute(
-                    "aria-expanded",
-                    "false"
-                );
-            }
         }
 
 
-        /* -------------------------------
-           SIDEBAR EVENTS
-        -------------------------------- */
-
+        /*
+         * Sidebar toggle.
+         */
         if (
-            sidebarToggle &&
-            !sidebarToggle.dataset.sidebarReady
+            !sidebarBtn._vidyaSidebarSet
         ) {
 
-            sidebarToggle.dataset.sidebarReady =
-                "true";
+            sidebarBtn._vidyaSidebarSet =
+                true;
 
-            sidebarToggle.addEventListener(
-                "click",
+            sidebarBtn.addEventListener(
+                "pointerup",
                 function (event) {
 
+                    event.preventDefault();
                     event.stopPropagation();
 
                     if (
@@ -2876,21 +2974,48 @@ document.addEventListener("DOMContentLoaded", () => {
                     } else {
                         openSidebar();
                     }
+
                 }
             );
         }
 
 
+        /*
+         * Close button.
+         */
         if (
-            sidebarClose &&
-            !sidebarClose.dataset.closeReady
+            closeBtn &&
+            !closeBtn._vidyaCloseSet
         ) {
 
-            sidebarClose.dataset.closeReady =
-                "true";
+            closeBtn._vidyaCloseSet =
+                true;
 
-            sidebarClose.addEventListener(
-                "click",
+            closeBtn.addEventListener(
+                "pointerup",
+                function (event) {
+
+                    event.preventDefault();
+
+                    closeSidebar();
+
+                }
+            );
+        }
+
+
+        /*
+         * Overlay closes sidebar.
+         */
+        if (
+            !overlay._vidyaOverlaySet
+        ) {
+
+            overlay._vidyaOverlaySet =
+                true;
+
+            overlay.addEventListener(
+                "pointerup",
                 function () {
                     closeSidebar();
                 }
@@ -2899,161 +3024,81 @@ document.addEventListener("DOMContentLoaded", () => {
 
 
         /*
-         * Clicking dark background closes sidebar
+         * Clicking a filter closes sidebar.
          */
-        if (
-            sidebarOverlay &&
-            !sidebarOverlay.dataset.overlayReady
-        ) {
-
-            sidebarOverlay.dataset.overlayReady =
-                "true";
-
-            sidebarOverlay.addEventListener(
-                "click",
-                function () {
-                    closeSidebar();
-                }
-            );
-        }
-
-
-        /* -------------------------------
-           SIDEBAR FILTER BUTTONS
-        -------------------------------- */
-
         sidebar
             .querySelectorAll(
                 ".sub-filter-btn"
             )
-            .forEach(function (button) {
+            .forEach(
+                function (button) {
 
-                if (
-                    button.dataset.mobileFilterReady
-                ) {
-                    return;
-                }
-
-                button.dataset.mobileFilterReady =
-                    "true";
-
-                button.addEventListener(
-                    "click",
-                    function () {
-
-                        // Small delay so the existing
-                        // filterByCourse/filterByCategory
-                        // function can run first.
-                        setTimeout(
-                            function () {
-                                if (
-                                    window.innerWidth <=
-                                    900
-                                ) {
-                                    closeSidebar();
-                                }
-                            },
-                            80
-                        );
+                    if (
+                        button._vidyaFilterSet
+                    ) {
+                        return;
                     }
-                );
-            });
+
+                    button._vidyaFilterSet =
+                        true;
+
+                    button.addEventListener(
+                        "pointerup",
+                        function () {
+
+                            if (
+                                window.innerWidth <=
+                                900
+                            ) {
+
+                                setTimeout(
+                                    closeSidebar,
+                                    100
+                                );
+
+                            }
+
+                        }
+                    );
+
+                }
+            );
 
 
-        /* -------------------------------
-           ESC KEY
-        -------------------------------- */
-
+        /*
+         * ESC closes sidebar.
+         */
         document.addEventListener(
             "keydown",
             function (event) {
 
-                if (event.key !== "Escape") {
-                    return;
+                if (
+                    event.key === "Escape"
+                ) {
+                    closeSidebar();
                 }
 
-                closeMobileNav();
-                closeSidebar();
             }
         );
 
 
-        /* -------------------------------
-           RESIZE HANDLING
-        -------------------------------- */
-
-        let lastWidth =
-            window.innerWidth;
-
+        /*
+         * Reset when switching desktop/mobile.
+         */
         window.addEventListener(
             "resize",
             function () {
 
-                const currentWidth =
-                    window.innerWidth;
-
-                /*
-                 * When switching back to desktop,
-                 * reset mobile states.
-                 */
                 if (
-                    currentWidth > 900 &&
-                    lastWidth <= 900
+                    window.innerWidth > 900
                 ) {
-                    closeMobileNav();
+
                     closeSidebar();
+
                 }
 
-                /*
-                 * When switching from desktop
-                 * to mobile, also reset states.
-                 */
-                if (
-                    currentWidth <= 900 &&
-                    lastWidth > 900
-                ) {
-                    closeMobileNav();
-                    closeSidebar();
-                }
-
-                lastWidth =
-                    currentWidth;
-            }
-        );
-
-
-        /* -------------------------------
-           PREVENT SIDEBAR FROM STAYING
-           OPEN AFTER PAGE RESTORE
-        -------------------------------- */
-
-        window.addEventListener(
-            "pageshow",
-            function () {
-                closeSidebar();
-                closeMobileNav();
             }
         );
     }
 
-
-    /* -----------------------------------
-       INITIALIZE AFTER DOM IS READY
-    ----------------------------------- */
-
-    if (
-        document.readyState ===
-        "loading"
-    ) {
-
-        document.addEventListener(
-            "DOMContentLoaded",
-            setupMobileNavigation
-        );
-
-    } else {
-
-        setupMobileNavigation();
-    }
-
-})();
+```
