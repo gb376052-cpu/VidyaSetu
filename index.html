@@ -8,6 +8,55 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="style.css">
+
+<style>
+.mobile-menu-btn{display:none;border:0;background:transparent;font-size:1.55rem;cursor:pointer;padding:.45rem;line-height:1}
+.sidebar-toggle,.sidebar-overlay,.sidebar-mobile-header{display:none}
+
+@media (max-width:900px){
+ html,body{overflow-x:hidden}
+ .top-strip{padding:.45rem 1rem;gap:.5rem;font-size:.72rem;flex-wrap:wrap}
+ .navbar{position:relative;padding:.8rem 1rem;gap:.6rem;z-index:1000}
+ .logo{font-size:1.25rem;margin-right:auto}
+ .mobile-menu-btn{display:inline-flex;align-items:center;justify-content:center}
+ .nav-links{display:none;position:absolute;top:100%;left:.75rem;right:.75rem;padding:.75rem;flex-direction:column;align-items:stretch;gap:.35rem;border-radius:14px;z-index:1100;box-shadow:0 12px 30px rgba(0,0,0,.15);background:var(--card-bg,#fff)}
+ .nav-links.active-mobile-menu{display:flex}
+ .nav-links a,.nav-links button{width:100%;text-align:left}
+ .app-layout{display:block;width:100%}
+ .sidebar{position:fixed;top:0;left:0;width:min(86vw,340px);height:100dvh;z-index:1200;overflow-y:auto;transform:translateX(-105%);transition:transform .28s ease;box-shadow:12px 0 35px rgba(0,0,0,.2);margin:0;padding:1.25rem}
+ .sidebar.sidebar-open{transform:translateX(0)}
+ .sidebar-mobile-header{display:flex;align-items:center;justify-content:space-between;gap:.75rem;margin-bottom:1rem}
+ .sidebar-mobile-header h3{margin:0}
+ .sidebar-close{border:0;background:transparent;font-size:2rem;line-height:1;cursor:pointer;padding:.15rem .35rem}
+ .sidebar-toggle{display:inline-flex;align-items:center;justify-content:center;gap:.5rem;position:sticky;top:.75rem;z-index:800;margin:.75rem 1rem 0;padding:.7rem 1rem;border:0;border-radius:10px;cursor:pointer;font:inherit;font-weight:700;background:var(--primary-color,#2563eb);color:#fff;box-shadow:0 5px 15px rgba(0,0,0,.12)}
+ .sidebar-overlay{position:fixed;inset:0;z-index:1150;background:rgba(0,0,0,.48);opacity:0;pointer-events:none;transition:opacity .25s ease;display:block}
+ .sidebar-overlay.sidebar-overlay-visible{opacity:1;pointer-events:auto}
+ body.sidebar-lock{overflow:hidden}
+ .main-content{width:100%;min-width:0;padding:.75rem 1rem 2rem}
+ .hero-banner{margin-top:.5rem;min-height:auto;padding:2rem 1.25rem;border-radius:16px}
+ .hero-banner h1{font-size:clamp(1.8rem,7vw,2.6rem);line-height:1.15}
+ .hero-banner p{font-size:.95rem;line-height:1.55}
+ .search-filter-bar{display:grid;grid-template-columns:1fr;gap:.75rem}
+ .search-filter-bar input,.search-filter-bar select{width:100%;min-width:0;box-sizing:border-box}
+ .scholarship-grid,.stats-grid,.steps-grid{grid-template-columns:1fr!important;gap:1rem}
+ .stat-card,.step-card{width:100%;box-sizing:border-box}
+ .section-title{font-size:1.55rem;line-height:1.25}
+ .slider-arrow{width:34px;height:34px}
+ .slider-arrow.prev{left:.4rem}.slider-arrow.next{right:.4rem}
+ .site-footer{font-size:.8rem;line-height:1.5;padding:1rem .5rem;text-align:center}
+}
+@media (max-width:520px){
+ .top-strip span:last-child{display:none}
+ .navbar{padding:.7rem .85rem}
+ .main-content{padding-left:.75rem;padding-right:.75rem}
+ .sidebar-toggle{margin-left:.75rem;margin-right:.75rem;width:calc(100% - 1.5rem)}
+ .hero-banner{padding:1.65rem 1rem}
+ .hero-banner h1{font-size:1.75rem}
+ .hero-banner .btn-primary{width:100%;box-sizing:border-box;text-align:center}
+ .modal-content{width:calc(100% - 1.5rem);max-height:90dvh;overflow-y:auto}
+}
+</style>
+
 </head>
 <body>
     <!-- Scroll progress bar -->
@@ -48,8 +97,15 @@
 
     <div class="app-layout">
         <!-- Left Sidebar -->
-        <aside class="sidebar">
-            <h3>📂 Quick Explore</h3>
+        <button class="sidebar-toggle" id="sidebarToggle" aria-label="Open scholarship filters" aria-controls="mobileSidebar" aria-expanded="false">
+            ☰ <span>Explore Filters</span>
+        </button>
+        <div class="sidebar-overlay" id="sidebarOverlay"></div>
+        <aside class="sidebar" id="mobileSidebar">
+            <div class="sidebar-mobile-header">
+                <h3>📂 Quick Explore</h3>
+                <button class="sidebar-close" id="sidebarClose" aria-label="Close sidebar">×</button>
+            </div>
 
             <!-- School -->
             <div class="menu-category">
@@ -218,14 +274,61 @@
 
     <script src="script.js"></script>
     
-    <!-- Mobile Menu Toggle Script -->
+    <!-- Responsive Navigation & Sidebar Script -->
     <script>
-        const mobileMenuBtn = document.getElementById('mobileMenuBtn');
-        const navLinks = document.getElementById('navLinks');
+        (() => {
+            const mobileMenuBtn = document.getElementById('mobileMenuBtn');
+            const navLinks = document.getElementById('navLinks');
+            const sidebarToggle = document.getElementById('sidebarToggle');
+            const sidebar = document.getElementById('mobileSidebar');
+            const sidebarClose = document.getElementById('sidebarClose');
+            const sidebarOverlay = document.getElementById('sidebarOverlay');
 
-        mobileMenuBtn.addEventListener('click', () => {
-            navLinks.classList.toggle('active-mobile-menu');
-        });
+            const closeSidebar = () => {
+                sidebar.classList.remove('sidebar-open');
+                sidebarOverlay.classList.remove('sidebar-overlay-visible');
+                sidebarToggle.setAttribute('aria-expanded', 'false');
+                document.body.classList.remove('sidebar-lock');
+            };
+
+            const openSidebar = () => {
+                sidebar.classList.add('sidebar-open');
+                sidebarOverlay.classList.add('sidebar-overlay-visible');
+                sidebarToggle.setAttribute('aria-expanded', 'true');
+                document.body.classList.add('sidebar-lock');
+            };
+
+            if (mobileMenuBtn && navLinks) {
+                mobileMenuBtn.addEventListener('click', () => {
+                    const isOpen = navLinks.classList.toggle('active-mobile-menu');
+                    mobileMenuBtn.setAttribute('aria-expanded', String(isOpen));
+                });
+
+                navLinks.querySelectorAll('a').forEach(link => {
+                    link.addEventListener('click', () => {
+                        navLinks.classList.remove('active-mobile-menu');
+                        mobileMenuBtn.setAttribute('aria-expanded', 'false');
+                    });
+                });
+            }
+
+            if (sidebarToggle) sidebarToggle.addEventListener('click', openSidebar);
+            if (sidebarClose) sidebarClose.addEventListener('click', closeSidebar);
+            if (sidebarOverlay) sidebarOverlay.addEventListener('click', closeSidebar);
+
+            sidebar.querySelectorAll('.sub-filter-btn').forEach(button => {
+                button.addEventListener('click', () => {
+                    if (window.innerWidth <= 900) closeSidebar();
+                });
+            });
+
+            window.addEventListener('resize', () => {
+                if (window.innerWidth > 900) {
+                    closeSidebar();
+                    if (navLinks) navLinks.classList.remove('active-mobile-menu');
+                }
+            });
+        })();
     </script>
 </body>
 </html>
