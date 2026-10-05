@@ -18,7 +18,7 @@
     <span class="page-deco d2">🎓</span>
     <span class="page-deco d3">✏️</span>
 
-    <!-- Top strip (official website jaisa) -->
+    <!-- Top strip -->
     <div class="top-strip">
         <span>🇮🇳 Scholarship Information Portal</span>
         <span>Academic Year 2026-27</span>
@@ -29,12 +29,15 @@
         <div class="logo">
             <span>🎯</span> Vidya<span>setu</span>
         </div>
-        <nav class="nav-links">
+        
+        <!-- Mobile Menu Toggle Button -->
+        <button class="mobile-menu-btn" id="mobileMenuBtn" aria-label="Toggle Menu">☰</button>
+
+        <nav class="nav-links" id="navLinks">
             <a href="index.html" class="active">Home</a>
             <a href="dashboard.html" id="dashboardNavLink">Dashboard</a>
             <a href="saved.html">Saved ⭐</a>
             <a href="quiz.html">Eligibility Quiz</a>
-            <a href="deadlines.html">Deadlines ⏳</a>
 
             <button id="themeToggleBtn" class="theme-btn" title="Toggle Theme">🌙</button>
             <div id="authLinkContainer" class="profile-menu-container">
@@ -86,7 +89,7 @@
                 </ul>
             </div>
 
-            <!-- Categories (hamesha visible) -->
+            <!-- Categories -->
             <div class="menu-category" style="margin-top: 2rem;">
                 <div class="menu-title">🏛️ Categories</div>
                 <ul class="submenu" style="display: block;">
@@ -214,5 +217,15 @@
     <div class="toast" id="toast"></div>
 
     <script src="script.js"></script>
+    
+    <!-- Mobile Menu Toggle Script -->
+    <script>
+        const mobileMenuBtn = document.getElementById('mobileMenuBtn');
+        const navLinks = document.getElementById('navLinks');
+
+        mobileMenuBtn.addEventListener('click', () => {
+            navLinks.classList.toggle('active-mobile-menu');
+        });
+    </script>
 </body>
 </html>
