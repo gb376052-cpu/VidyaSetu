@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Setup Profile - Vidyasetu</title>
+    <link rel="stylesheet" href="style.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+</head>
+<body>
+
+    <!-- Navbar -->
+    <header class="navbar">
+        <div class="logo">Vidya<span>setu</span></div>
+        <nav>
+            <a href="index.html">Home</a>
+            <a href="dashboard.html">Dashboard</a>
+            <div id="authLinkContainer"></div>
+        </nav>
+    </header>
+
+    <!-- Multi-Step Form Section -->
+    <section class="form-section">
+        <div class="form-container">
+            <h2>Setup Your Scholarship Profile</h2>
+            <p>Tell us a bit about yourself so our matching engine can find 100% eligible grants for you.</p>
+
+            <!-- Progress Indicator -->
+            <div class="wizard-steps-indicator">
+                <div class="step-indicator active" id="ind-1">1. Basic Info</div>
+                <div class="step-indicator" id="ind-2">2. Academic</div>
+                <div class="step-indicator" id="ind-3">3. Financial</div>
+            </div>
+
+            <form id="profileForm">
+                
+                <!-- STEP 1: Basic Information -->
+                <div class="wizard-step active-step" id="step-1">
+                    <div class="input-group">
+                        <label for="name">Full Name</label>
+                        <input type="text" id="name" placeholder="e.g. Rahul Sharma" required>
+                    </div>
+                    <div class="input-group">
+                        <label for="state">State of Domicile</label>
+                        <select id="state" required>
+                            <option value="">Select your state</option>
+                            <option value="All-India">All-India / Other</option>
+                            <option value="Uttar Pradesh">Uttar Pradesh</option>
+                            <option value="Uttarakhand">Uttarakhand</option>
+                            <option value="Delhi">Delhi</option>
+                            <option value="Bihar">Bihar</option>
+                            <option value="Maharashtra">Maharashtra</option>
+                            <option value="Karnataka">Karnataka</option>
+                        </select>
+                    </div>
+                    <div class="input-group">
+                        <label for="category">Category</label>
+                        <select id="category" required>
+                            <option value="">Select category</option>
+                            <option value="General">General</option>
+                            <option value="OBC">OBC</option>
+                            <option value="SC">SC</option>
+                            <option value="ST">ST</option>
+                            <option value="Minority">Minority</option>
+                        </select>
+                    </div>
+                    <button type="button" class="btn-primary full-width" onclick="nextStep(2)">Next Step &rarr;</button>
+                </div>
+
+                <!-- STEP 2: Academic Information -->
+                <div class="wizard-step" id="step-2" style="display: none;">
+                    <div class="input-group">
+                        <label for="course">Current Course / Class</label>
+                        <select id="course" required>
+                            <option value="">Select current education level</option>
+                            <option value="Class 9">Class 9</option>
+                            <option value="Class 10">Class 10</option>
+                            <option value="Class 11">Class 11</option>
+                            <option value="Class 12">Class 12</option>
+                            <option value="BCA">BCA (Bachelor of Computer Applications)</option>
+                            <option value="BTech">B.Tech / Engineering</option>
+                            <option value="BSc">B.Sc / Science</option>
+                            <option value="Diploma">Polytechnic Diploma</option>
+                            <option value="Post Graduation">Post Graduation</option>
+                        </select>
+                    </div>
+                    <div class="input-group">
+                        <label for="percentage">Last Exam Percentage (%)</label>
+                        <input type="number" step="0.1" id="percentage" placeholder="e.g. 75.5" required>
+                    </div>
+                    <div class="form-btn-group" style="display: flex; gap: 1rem;">
+                        <button type="button" class="btn-secondary full-width" onclick="prevStep(1)">&larr; Back</button>
+                        <button type="button" class="btn-primary full-width" onclick="nextStep(3)">Next Step &rarr;</button>
+                    </div>
+                </div>
+
+                <!-- STEP 3: Financial Information -->
+                <div class="wizard-step" id="step-3" style="display: none;">
+                    <div class="input-group">
+                        <label for="income">Annual Family Income (₹)</label>
+                        <input type="number" id="income" placeholder="e.g. 250000" required>
+                    </div>
+                    <div class="form-btn-group" style="display: flex; gap: 1rem;">
+                        <button type="button" class="btn-secondary full-width" onclick="prevStep(2)">&larr; Back</button>
+                        <button type="submit" class="btn-primary full-width" style="background-color: #16a34a;">Save & Find Matches 🎉</button>
+                    </div>
+                </div>
+
+            </form>
+        </div>
+    </section>
+
+    <script src="script.js"></script>
+</body>
+</html>

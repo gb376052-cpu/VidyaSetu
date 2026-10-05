@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Saved Scholarships - Vidyasetu</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <!-- Navbar -->
+    <header class="navbar" style="display: flex; justify-content: space-between; align-items: center; padding: 1rem 2rem; background: var(--card-bg); border-bottom: 1px solid var(--border-color); position: sticky; top: 0; z-index: 100;">
+        <div class="logo" style="font-size: 1.4rem; font-weight: bold; color: var(--primary-color);">
+            <span style="font-size: 1.5rem;">🎯</span> <strong>Vidyasetu</strong>
+        </div>
+        <nav class="nav-links" style="display: flex; gap: 1.5rem; align-items: center; flex-wrap: wrap;">
+            <a href="index.html" style="color: var(--text-color); text-decoration: none; font-weight: 500;">Home</a>
+            <a href="dashboard.html" style="color: var(--text-color); text-decoration: none; font-weight: 500;">Dashboard</a>
+            <a href="saved.html" class="active" style="color: var(--text-color); text-decoration: none; font-weight: 500;">Saved ⭐</a>
+            <a href="quiz.html" style="color: var(--text-color); text-decoration: none; font-weight: 500;">Eligibility Quiz</a>
+            <a href="deadlines.html" style="color: var(--text-color); text-decoration: none; font-weight: 500;">Deadlines ⏳</a>
+            
+            <button id="themeToggleBtn" class="theme-btn" title="Toggle Theme" style="background: none; border: none; cursor: pointer; font-size: 1.2rem;">🌙</button>
+            <div id="authLinkContainer" class="profile-menu-container"></div>
+        </nav>
+    </header>
+
+    <!-- Main Content Layout -->
+    <div class="app-layout" style="display: flex; padding: 2rem; max-width: 1200px; margin: 0 auto; width: 100%;">
+        <main class="main-content" style="width: 100%;">
+            <div style="margin-bottom: 2rem; text-align: center;">
+                <h1 style="font-size: 2rem; font-weight: 800; color: var(--text-color); margin-bottom: 0.5rem;">Saved Scholarships ⭐</h1>
+                <p style="color: var(--text-secondary);">Aapke bookmark kiye gaye scholarships ki list yahan dikhegi.</p>
+            </div>
+
+            <!-- Saved Scholarships Container jahan cards dynamically load honge -->
+            <div id="savedScholarshipsContainer" class="scholarship-grid" style="display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 1.5rem;">
+                <!-- JavaScript yahan cards insert karega -->
+            </div>
+        </main>
+    </div>
+
+    <!-- Script file -->
+    <script src="script.js"></script>
+    <script>
+        // Page load hote hi saved scholarships ko render karne ke liye
+        document.addEventListener('DOMContentLoaded', () => {
+            if (typeof loadSavedScholarships === 'function') {
+                loadSavedScholarships();
+            }
+        });
+    </script>
+</body>
+</html>

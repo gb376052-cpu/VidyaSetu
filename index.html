@@ -1,0 +1,218 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Vidyasetu - Scholarship Portal</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <!-- Scroll progress bar -->
+    <div class="scroll-progress" id="scrollProgress"></div>
+
+    <!-- Background floating decorations -->
+    <span class="page-deco d1">📚</span>
+    <span class="page-deco d2">🎓</span>
+    <span class="page-deco d3">✏️</span>
+
+    <!-- Top strip (official website jaisa) -->
+    <div class="top-strip">
+        <span>🇮🇳 Scholarship Information Portal</span>
+        <span>Academic Year 2026-27</span>
+    </div>
+
+    <!-- Navbar -->
+    <header class="navbar">
+        <div class="logo">
+            <span>🎯</span> Vidya<span>setu</span>
+        </div>
+        <nav class="nav-links">
+            <a href="index.html" class="active">Home</a>
+            <a href="dashboard.html" id="dashboardNavLink">Dashboard</a>
+            <a href="saved.html">Saved ⭐</a>
+            <a href="quiz.html">Eligibility Quiz</a>
+            <a href="deadlines.html">Deadlines ⏳</a>
+
+            <button id="themeToggleBtn" class="theme-btn" title="Toggle Theme">🌙</button>
+            <div id="authLinkContainer" class="profile-menu-container">
+                <!-- Dynamically populated profile icon or login link -->
+            </div>
+        </nav>
+    </header>
+
+    <div class="app-layout">
+        <!-- Left Sidebar -->
+        <aside class="sidebar">
+            <h3>📂 Quick Explore</h3>
+
+            <!-- School -->
+            <div class="menu-category">
+                <div class="menu-title">🏫 School <span>▼</span></div>
+                <ul class="submenu">
+                    <li><button class="sub-filter-btn" onclick="filterByCourse('Class 9')">Class 9</button></li>
+                    <li><button class="sub-filter-btn" onclick="filterByCourse('Class 10')">Class 10</button></li>
+                    <li><button class="sub-filter-btn" onclick="filterByCourse('Class 11')">Class 11</button></li>
+                    <li><button class="sub-filter-btn" onclick="filterByCourse('Class 12')">Class 12</button></li>
+                </ul>
+            </div>
+
+            <!-- College -->
+            <div class="menu-category">
+                <div class="menu-title">🎓 College <span>▼</span></div>
+                <ul class="submenu">
+                    <li class="sub-dropdown">
+                        <a href="#">Diploma &rsaquo;</a>
+                        <ul class="nested-menu submenu">
+                            <li><button class="sub-filter-btn" onclick="filterByCourse('Diploma')">All Diploma</button></li>
+                        </ul>
+                    </li>
+                    <li class="sub-dropdown">
+                        <a href="#">Undergraduate (UG) &rsaquo;</a>
+                        <ul class="nested-menu submenu">
+                            <li><button class="sub-filter-btn" onclick="filterByCourse('BCA')">BCA</button></li>
+                            <li><button class="sub-filter-btn" onclick="filterByCourse('BTech')">B.Tech / Engineering</button></li>
+                            <li><button class="sub-filter-btn" onclick="filterByCourse('BSc')">B.Sc / Science</button></li>
+                        </ul>
+                    </li>
+                    <li class="sub-dropdown">
+                        <a href="#">Postgraduate (PG) &rsaquo;</a>
+                        <ul class="nested-menu submenu">
+                            <li><button class="sub-filter-btn" onclick="filterByCourse('Post Graduation')">Masters / Post Graduation</button></li>
+                        </ul>
+                    </li>
+                </ul>
+            </div>
+
+            <!-- Categories (hamesha visible) -->
+            <div class="menu-category" style="margin-top: 2rem;">
+                <div class="menu-title">🏛️ Categories</div>
+                <ul class="submenu" style="display: block;">
+                    <li><button class="sub-filter-btn" onclick="filterByCategory('Central Government')">Central Schemes</button></li>
+                    <li><button class="sub-filter-btn" onclick="filterByCategory('State Government')">State Schemes</button></li>
+                    <li><button class="sub-filter-btn" onclick="filterByCategory('Private / Corporate')">Corporate &amp; CSR</button></li>
+                </ul>
+            </div>
+        </aside>
+
+        <!-- Main Content -->
+        <main class="main-content">
+
+            <!-- Hero banner slider -->
+            <section class="hero-banner reveal">
+                <span class="hero-deco left">🎓</span>
+                <span class="hero-deco right">📚</span>
+                <span class="hero-deco small top-left">✏️</span>
+                <span class="hero-deco small bottom-right">📜</span>
+
+                <div class="slide active">
+                    <h1>Find the Right Scholarship, <span class="highlight">Instantly</span></h1>
+                    <p>Connect with Central, State, and Private scholarships tailored to your profile, category, and academic goals.</p>
+                    <div id="heroActionContainer">
+                        <a href="profile.html" class="btn-primary" id="setupProfileHeroBtn">Setup Profile &amp; Get Matched &rarr;</a>
+                    </div>
+                </div>
+
+                <div class="slide">
+                    <h1>Empowering and <span class="highlight">Inspiring</span></h1>
+                    <p>Students to Excel as Life Long Learners</p>
+                </div>
+
+                <div class="slide">
+                    <h1>Check <span class="highlight">Eligibility</span> in Seconds</h1>
+                    <p>Complete your profile and discover matching scholarships instantly</p>
+                </div>
+
+                <button class="slider-arrow prev" aria-label="Previous slide">‹</button>
+                <button class="slider-arrow next" aria-label="Next slide">›</button>
+                <div class="slider-dots"></div>
+            </section>
+
+            <!-- Explore all scholarships -->
+            <section class="directory-section" id="explore">
+                <h2>Explore All Scholarships</h2>
+                <div class="search-filter-bar">
+                    <input type="text" id="globalSearch" placeholder="Search scholarship name or provider...">
+                    <select id="filterProvider">
+                        <option value="">All Providers</option>
+                        <option value="Central Government">Central Government</option>
+                        <option value="State Government">State Government</option>
+                        <option value="Private / Corporate">Private / Corporate</option>
+                    </select>
+                </div>
+                <div id="allScholarshipsContainer" class="scholarship-grid"></div>
+            </section>
+
+            <!-- What you can do -->
+            <section class="info-section reveal">
+                <h2 class="section-title">What You Can Do with Vidyasetu</h2>
+                <p class="section-sub">Simple tools to explore and understand scholarship opportunities</p>
+                <div class="stats-grid">
+                    <div class="stat-card">
+                        <div class="stat-icon">🔎</div>
+                        <div class="stat-label">Explore Scholarships</div>
+                        <p>Explore different scholarship opportunities in one place and understand the basic information about them.</p>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-icon">📝</div>
+                        <div class="stat-label">Create Your Profile</div>
+                        <p>Add your academic and category details to discover scholarships that may be relevant to your profile.</p>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-icon">🎯</div>
+                        <div class="stat-label">Check Eligibility</div>
+                        <p>Review eligibility requirements and understand which scholarships may match your profile.</p>
+                    </div>
+                </div>
+            </section>
+
+            <!-- How it works -->
+            <section class="info-section reveal">
+                <h2 class="section-title">How It Works</h2>
+                <p class="section-sub">Only 3 simple steps</p>
+                <div class="steps-grid">
+                    <div class="step-card">
+                        <span class="step-no">1</span>
+                        <div class="step-icon">📝</div>
+                        <h4>Create Your Profile</h4>
+                        <p>Enter your academic and category details</p>
+                    </div>
+                    <div class="step-card">
+                        <span class="step-no">2</span>
+                        <div class="step-icon">🔍</div>
+                        <h4>View Matches</h4>
+                        <p>Find scholarships that may be eligible based on your profile</p>
+                    </div>
+                    <div class="step-card">
+                        <span class="step-no">3</span>
+                        <div class="step-icon">🚀</div>
+                        <h4>Apply</h4>
+                        <p>Apply with the required documents</p>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Footer -->
+            <footer class="site-footer" style="width: 100%;">
+                © 2026 Vidyasetu - Scholarship Portal | Made with ❤️ by Gaurav
+            </footer>
+        </main>
+    </div>
+
+    <!-- Modal for Detailed Guide -->
+    <div id="scholarshipModal" class="modal">
+        <div class="modal-content">
+            <span class="close-btn">&times;</span>
+            <div id="modalBody"></div>
+        </div>
+    </div>
+
+    <!-- Extras -->
+    <button class="back-to-top" id="backToTop" aria-label="Back to top">↑</button>
+    <div class="toast" id="toast"></div>
+
+    <script src="script.js"></script>
+</body>
+</html>

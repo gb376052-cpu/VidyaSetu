@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Vidyasetu - Dashboard</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <header class="navbar" style="display: flex; justify-content: space-between; align-items: center; padding: 1rem 2rem; background: var(--card-bg); border-bottom: 1px solid var(--border-color); position: sticky; top: 0; z-index: 100;">
+        <div class="logo" style="font-size: 1.4rem; font-weight: bold; color: var(--primary-color);">
+            <span style="font-size: 1.5rem;">🎯</span> <strong>Vidyasetu</strong>
+        </div>
+        <nav class="nav-links" style="display: flex; gap: 1.5rem; align-items: center; flex-wrap: wrap;">
+            <a href="index.html" style="color: var(--text-color); text-decoration: none; font-weight: 500;">Home</a>
+            <a href="dashboard.html" class="active" style="color: var(--text-color); text-decoration: none; font-weight: 500;">Dashboard</a>
+            <a href="saved.html" style="color: var(--text-color); text-decoration: none; font-weight: 500;">Saved ⭐</a>
+            <a href="quiz.html" style="color: var(--text-color); text-decoration: none; font-weight: 500;">Eligibility Quiz</a>
+            <a href="deadlines.html" style="color: var(--text-color); text-decoration: none; font-weight: 500;">Deadlines ⏳</a>
+            
+            <button id="themeToggleBtn" class="theme-btn" title="Toggle Theme" style="background: none; border: none; cursor: pointer; font-size: 1.2rem;">🌙</button>
+            <div id="authLinkContainer" class="profile-menu-container">
+                <!-- Profile dropdown will be injected here -->
+            </div>
+        </nav>
+    </header>
+
+    <div class="app-layout">
+        <!-- Left Sidebar with Hover Dropdowns -->
+        <aside class="sidebar">
+            <h3>📂 Quick Browse</h3>
+            
+            <!-- School Section -->
+            <div class="menu-category">
+                <div class="menu-title">🏫 School <span>▼</span></div>
+                <ul class="submenu">
+                    <li><button class="sub-filter-btn" onclick="filterByCourse('Class 9')">Class 9</button></li>
+                    <li><button class="sub-filter-btn" onclick="filterByCourse('Class 10')">Class 10</button></li>
+                    <li><button class="sub-filter-btn" onclick="filterByCourse('Class 11')">Class 11</button></li>
+                    <li><button class="sub-filter-btn" onclick="filterByCourse('Class 12')">Class 12</button></li>
+                </ul>
+            </div>
+
+            <!-- College Section -->
+            <div class="menu-category">
+                <div class="menu-title">🎓 College <span>▼</span></div>
+                <ul class="submenu">
+                    <!-- Diploma -->
+                    <li class="sub-dropdown">
+                        <a href="#">Diploma &rsaquo;</a>
+                        <ul class="nested-menu submenu" style="display: block; padding-left: 0.5rem;">
+                            <li><button class="sub-filter-btn" onclick="filterByCourse('Diploma')">All Diploma</button></li>
+                        </ul>
+                    </li>
+                    <!-- Undergraduate -->
+                    <li class="sub-dropdown">
+                        <a href="#">Undergraduate (UG) &rsaquo;</a>
+                        <ul class="nested-menu submenu" style="display: block; padding-left: 0.5rem;">
+                            <li><button class="sub-filter-btn" onclick="filterByCourse('BCA')">BCA</button></li>
+                            <li><button class="sub-filter-btn" onclick="filterByCourse('BTech')">B.Tech / Engineering</button></li>
+                            <li><button class="sub-filter-btn" onclick="filterByCourse('BSc')">B.Sc / Science</button></li>
+                        </ul>
+                    </li>
+                    <!-- Postgraduate -->
+                    <li class="sub-dropdown">
+                        <a href="#">Postgraduate (PG) &rsaquo;</a>
+                        <ul class="nested-menu submenu" style="display: block; padding-left: 0.5rem;">
+                            <li><button class="sub-filter-btn" onclick="filterByCourse('Post Graduation')">Masters / Post Graduation</button></li>
+                        </ul>
+                    </li>
+                </ul>
+            </div>
+
+            <!-- Category Shortcuts -->
+            <div class="menu-category" style="margin-top: 2rem;">
+                <div class="menu-title">🏛️ Categories</div>
+                <ul class="submenu" style="display: block;">
+                    <li><button class="sub-filter-btn" onclick="filterByCategory('Central Government')">Central Schemes</button></li>
+                    <li><button class="sub-filter-btn" onclick="filterByCategory('State Government')">State Schemes</button></li>
+                    <li><button class="sub-filter-btn" onclick="filterByCategory('Private / Corporate')">Corporate & CSR</button></li>
+                </ul>
+            </div>
+        </aside>
+
+        <!-- Main Content Area -->
+        <main class="main-content">
+            <h1 id="welcomeText">Welcome!</h1>
+            <p id="profileSummaryText" style="color: var(--text-secondary); margin-bottom: 2rem;"></p>
+
+            <div class="filter-section" style="display: flex; gap: 1rem; margin-bottom: 2rem; flex-wrap: wrap;">
+                <input type="text" id="dashSearch" placeholder="Filter your matched scholarships..." style="flex: 1; padding: 0.75rem; border-radius: 8px; border: 1px solid var(--border-color); background: var(--card-bg); color: var(--text-color);">
+                <select id="dashCategoryFilter" style="padding: 0.75rem; border-radius: 8px; border: 1px solid var(--border-color); background: var(--card-bg); color: var(--text-color);">
+                    <option value="">All Categories</option>
+                    <option value="Central Government">Central Government</option>
+                    <option value="State Government">State Government</option>
+                    <option value="Private / Corporate">Private / Corporate</option>
+                </select>
+            </div>
+
+            <h2 style="margin-bottom: 1rem; display: flex; align-items: center; gap: 0.5rem;">
+                ✅ 100% Eligible Scholarships
+            </h2>
+            <div id="scholarshipsContainer" class="scholarship-grid"></div>
+        </main>
+    </div>
+
+    <!-- Modal for Detailed Guide -->
+    <div id="scholarshipModal" class="modal">
+        <div class="modal-content" style="background: var(--card-bg); color: var(--text-color);">
+            <span class="close-btn">&times;</span>
+            <div id="modalBody"></div>
+        </div>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+</html>
