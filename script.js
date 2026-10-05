@@ -2616,3 +2616,444 @@ document.addEventListener("DOMContentLoaded", () => {
     initScrollEffects();
     initSidebar();
 });
+
+
+/* ==========================================================
+   VIDYASETU MOBILE NAVIGATION + SIDEBAR
+   Add this block at the VERY END of script.js
+   ========================================================== */
+
+(function initVidyasetuMobileNavigation() {
+    function setupMobileNavigation() {
+
+        /* -------------------------------
+           MOBILE TOP NAVIGATION
+        -------------------------------- */
+
+        const mobileMenuBtn = document.getElementById("mobileMenuBtn");
+
+        // Works with both:
+        // <nav class="nav-links">
+        // and
+        // <nav id="profileNav">
+        const mobileNav =
+            document.querySelector(".navbar .nav-links") ||
+            document.querySelector(".navbar nav");
+
+        if (mobileMenuBtn && mobileNav) {
+
+            // Prevent duplicate listeners
+            if (!mobileMenuBtn.dataset.mobileNavReady) {
+
+                mobileMenuBtn.dataset.mobileNavReady = "true";
+
+                mobileMenuBtn.addEventListener("click", function (event) {
+                    event.stopPropagation();
+
+                    const isOpen =
+                        mobileNav.classList.toggle("active-mobile-menu");
+
+                    mobileMenuBtn.setAttribute(
+                        "aria-expanded",
+                        String(isOpen)
+                    );
+
+                    // Change hamburger icon
+                    if (isOpen) {
+                        mobileMenuBtn.textContent = "✕";
+                    } else {
+                        mobileMenuBtn.textContent = "☰";
+                    }
+                });
+
+                // Close menu when a navigation link is clicked
+                mobileNav.querySelectorAll("a").forEach(function (link) {
+                    link.addEventListener("click", function () {
+                        closeMobileNav();
+                    });
+                });
+            }
+        }
+
+        function closeMobileNav() {
+            if (!mobileNav) return;
+
+            mobileNav.classList.remove("active-mobile-menu");
+
+            if (mobileMenuBtn) {
+                mobileMenuBtn.setAttribute("aria-expanded", "false");
+                mobileMenuBtn.textContent = "☰";
+            }
+        }
+
+        /* -------------------------------
+           CLOSE NAV WHEN CLICKING OUTSIDE
+        -------------------------------- */
+
+        document.addEventListener("click", function (event) {
+
+            if (!mobileNav || !mobileMenuBtn) return;
+
+            if (
+                mobileNav.classList.contains("active-mobile-menu") &&
+                !mobileNav.contains(event.target) &&
+                !mobileMenuBtn.contains(event.target)
+            ) {
+                closeMobileNav();
+            }
+        });
+
+
+        /* -------------------------------
+           MOBILE SIDEBAR
+        -------------------------------- */
+
+        const sidebar =
+            document.querySelector(".sidebar");
+
+        if (!sidebar) return;
+
+
+        /*
+         * Create mobile sidebar button if it
+         * does not already exist.
+         */
+        let sidebarToggle =
+            document.querySelector(".sidebar-toggle");
+
+        if (!sidebarToggle) {
+
+            sidebarToggle = document.createElement("button");
+
+            sidebarToggle.className = "sidebar-toggle";
+            sidebarToggle.type = "button";
+
+            sidebarToggle.innerHTML =
+                "☰ <span>Explore Filters</span>";
+
+            sidebar.parentElement.insertBefore(
+                sidebarToggle,
+                sidebar
+            );
+        }
+
+
+        /*
+         * Create overlay
+         */
+        let sidebarOverlay =
+            document.querySelector(".sidebar-overlay");
+
+        if (!sidebarOverlay) {
+
+            sidebarOverlay =
+                document.createElement("div");
+
+            sidebarOverlay.className =
+                "sidebar-overlay";
+
+            document.body.appendChild(
+                sidebarOverlay
+            );
+        }
+
+
+        /*
+         * Create mobile sidebar header
+         */
+        let sidebarHeader =
+            sidebar.querySelector(".sidebar-mobile-header");
+
+        if (!sidebarHeader) {
+
+            sidebarHeader =
+                document.createElement("div");
+
+            sidebarHeader.className =
+                "sidebar-mobile-header";
+
+            sidebarHeader.innerHTML = `
+                <h3>📂 Quick Browse</h3>
+
+                <button
+                    type="button"
+                    class="sidebar-close"
+                    aria-label="Close filters"
+                >
+                    ×
+                </button>
+            `;
+
+            sidebar.insertBefore(
+                sidebarHeader,
+                sidebar.firstChild
+            );
+        }
+
+
+        const sidebarClose =
+            sidebar.querySelector(".sidebar-close");
+
+
+        /* -------------------------------
+           OPEN SIDEBAR
+        -------------------------------- */
+
+        function openSidebar() {
+
+            sidebar.classList.add(
+                "sidebar-open"
+            );
+
+            sidebarOverlay.classList.add(
+                "sidebar-overlay-visible"
+            );
+
+            document.body.classList.add(
+                "sidebar-lock"
+            );
+
+            if (sidebarToggle) {
+                sidebarToggle.setAttribute(
+                    "aria-expanded",
+                    "true"
+                );
+            }
+        }
+
+
+        /* -------------------------------
+           CLOSE SIDEBAR
+        -------------------------------- */
+
+        function closeSidebar() {
+
+            sidebar.classList.remove(
+                "sidebar-open"
+            );
+
+            sidebarOverlay.classList.remove(
+                "sidebar-overlay-visible"
+            );
+
+            document.body.classList.remove(
+                "sidebar-lock"
+            );
+
+            if (sidebarToggle) {
+                sidebarToggle.setAttribute(
+                    "aria-expanded",
+                    "false"
+                );
+            }
+        }
+
+
+        /* -------------------------------
+           SIDEBAR EVENTS
+        -------------------------------- */
+
+        if (
+            sidebarToggle &&
+            !sidebarToggle.dataset.sidebarReady
+        ) {
+
+            sidebarToggle.dataset.sidebarReady =
+                "true";
+
+            sidebarToggle.addEventListener(
+                "click",
+                function (event) {
+
+                    event.stopPropagation();
+
+                    if (
+                        sidebar.classList.contains(
+                            "sidebar-open"
+                        )
+                    ) {
+                        closeSidebar();
+                    } else {
+                        openSidebar();
+                    }
+                }
+            );
+        }
+
+
+        if (
+            sidebarClose &&
+            !sidebarClose.dataset.closeReady
+        ) {
+
+            sidebarClose.dataset.closeReady =
+                "true";
+
+            sidebarClose.addEventListener(
+                "click",
+                function () {
+                    closeSidebar();
+                }
+            );
+        }
+
+
+        /*
+         * Clicking dark background closes sidebar
+         */
+        if (
+            sidebarOverlay &&
+            !sidebarOverlay.dataset.overlayReady
+        ) {
+
+            sidebarOverlay.dataset.overlayReady =
+                "true";
+
+            sidebarOverlay.addEventListener(
+                "click",
+                function () {
+                    closeSidebar();
+                }
+            );
+        }
+
+
+        /* -------------------------------
+           SIDEBAR FILTER BUTTONS
+        -------------------------------- */
+
+        sidebar
+            .querySelectorAll(
+                ".sub-filter-btn"
+            )
+            .forEach(function (button) {
+
+                if (
+                    button.dataset.mobileFilterReady
+                ) {
+                    return;
+                }
+
+                button.dataset.mobileFilterReady =
+                    "true";
+
+                button.addEventListener(
+                    "click",
+                    function () {
+
+                        // Small delay so the existing
+                        // filterByCourse/filterByCategory
+                        // function can run first.
+                        setTimeout(
+                            function () {
+                                if (
+                                    window.innerWidth <=
+                                    900
+                                ) {
+                                    closeSidebar();
+                                }
+                            },
+                            80
+                        );
+                    }
+                );
+            });
+
+
+        /* -------------------------------
+           ESC KEY
+        -------------------------------- */
+
+        document.addEventListener(
+            "keydown",
+            function (event) {
+
+                if (event.key !== "Escape") {
+                    return;
+                }
+
+                closeMobileNav();
+                closeSidebar();
+            }
+        );
+
+
+        /* -------------------------------
+           RESIZE HANDLING
+        -------------------------------- */
+
+        let lastWidth =
+            window.innerWidth;
+
+        window.addEventListener(
+            "resize",
+            function () {
+
+                const currentWidth =
+                    window.innerWidth;
+
+                /*
+                 * When switching back to desktop,
+                 * reset mobile states.
+                 */
+                if (
+                    currentWidth > 900 &&
+                    lastWidth <= 900
+                ) {
+                    closeMobileNav();
+                    closeSidebar();
+                }
+
+                /*
+                 * When switching from desktop
+                 * to mobile, also reset states.
+                 */
+                if (
+                    currentWidth <= 900 &&
+                    lastWidth > 900
+                ) {
+                    closeMobileNav();
+                    closeSidebar();
+                }
+
+                lastWidth =
+                    currentWidth;
+            }
+        );
+
+
+        /* -------------------------------
+           PREVENT SIDEBAR FROM STAYING
+           OPEN AFTER PAGE RESTORE
+        -------------------------------- */
+
+        window.addEventListener(
+            "pageshow",
+            function () {
+                closeSidebar();
+                closeMobileNav();
+            }
+        );
+    }
+
+
+    /* -----------------------------------
+       INITIALIZE AFTER DOM IS READY
+    ----------------------------------- */
+
+    if (
+        document.readyState ===
+        "loading"
+    ) {
+
+        document.addEventListener(
+            "DOMContentLoaded",
+            setupMobileNavigation
+        );
+
+    } else {
+
+        setupMobileNavigation();
+    }
+
+})();
