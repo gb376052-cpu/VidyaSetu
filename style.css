@@ -1191,3 +1191,430 @@ body.dark-mode .modal-content {
     .search-filter-bar { flex-direction: column; }
     .page-deco { display: none; }
 }
+
+/* ==========================================================
+   16. MOBILE NAVIGATION + SIDEBAR FIX
+   Fixes transparent/overlapping mobile menus and keeps the
+   desktop layout unchanged.
+   ========================================================== */
+
+.mobile-menu-btn {
+    display: none;
+    border: 0;
+    background: transparent;
+    color: var(--text-color);
+    cursor: pointer;
+    font-size: 1.55rem;
+    line-height: 1;
+    padding: 0.4rem;
+}
+
+/* Elements used by the mobile sidebar drawer */
+.sidebar-toggle,
+.sidebar-overlay,
+.sidebar-mobile-header {
+    display: none;
+}
+
+@media (max-width: 900px) {
+
+    html,
+    body {
+        width: 100%;
+        max-width: 100%;
+        overflow-x: hidden;
+    }
+
+    /* ---------------- NAVBAR ---------------- */
+
+    .navbar {
+        position: sticky !important;
+        top: 0;
+        z-index: 2000 !important;
+        padding: 0.75rem 1rem !important;
+        gap: 0.5rem;
+    }
+
+    .navbar .logo {
+        margin-right: auto;
+        white-space: nowrap;
+        min-width: 0;
+    }
+
+    .mobile-menu-btn {
+        display: inline-flex !important;
+        align-items: center;
+        justify-content: center;
+        position: relative;
+        z-index: 2003;
+        flex-shrink: 0;
+    }
+
+    /*
+       IMPORTANT:
+       Inline display:flex on dashboard/saved pages is overridden
+       with !important so the mobile menu does not remain stretched
+       across the page.
+    */
+    .navbar .nav-links,
+    .navbar nav {
+        display: none !important;
+        position: absolute !important;
+        top: 100% !important;
+        left: 0 !important;
+        right: 0 !important;
+
+        width: auto !important;
+        height: auto !important;
+        max-height: calc(100dvh - 70px);
+        overflow-y: auto;
+
+        flex-direction: column !important;
+        align-items: stretch !important;
+        justify-content: flex-start !important;
+        gap: 0.2rem !important;
+        flex-wrap: nowrap !important;
+
+        margin: 0 !important;
+        padding: 0.7rem 1rem !important;
+
+        /*
+           Solid background is the main fix for the screenshot.
+           Do NOT use the translucent desktop card background here.
+        */
+        background: #111827 !important;
+        background-color: #111827 !important;
+        opacity: 1 !important;
+        visibility: visible !important;
+
+        border: 0 !important;
+        border-top: 1px solid rgba(255, 255, 255, 0.10) !important;
+        border-radius: 0 !important;
+
+        box-shadow: 0 14px 28px rgba(0, 0, 0, 0.30) !important;
+        backdrop-filter: none !important;
+        -webkit-backdrop-filter: none !important;
+
+        z-index: 2001 !important;
+    }
+
+    body:not(.dark-mode) .navbar .nav-links,
+    body:not(.dark-mode) .navbar nav {
+        background: #ffffff !important;
+        background-color: #ffffff !important;
+        color: var(--text-color);
+        border-bottom: 1px solid var(--border-color) !important;
+    }
+
+    .navbar .nav-links.active-mobile-menu,
+    .navbar nav.active-mobile-menu {
+        display: flex !important;
+    }
+
+    .navbar .nav-links a,
+    .navbar nav a {
+        display: block !important;
+        width: 100% !important;
+        box-sizing: border-box;
+        padding: 0.75rem 0.65rem !important;
+        border-radius: 8px;
+        color: var(--text-color) !important;
+        background: transparent !important;
+        text-decoration: none;
+    }
+
+    .navbar .nav-links a:hover,
+    .navbar .nav-links a.active,
+    .navbar nav a:hover,
+    .navbar nav a.active {
+        background: rgba(37, 99, 235, 0.10) !important;
+        color: var(--primary-color) !important;
+    }
+
+    body.dark-mode .navbar .nav-links a,
+    body.dark-mode .navbar nav a {
+        color: #ffffff !important;
+    }
+
+    .navbar .nav-links .theme-btn,
+    .navbar nav .theme-btn {
+        width: 100% !important;
+        min-height: 42px;
+        text-align: left;
+        border-radius: 8px;
+        padding: 0.65rem !important;
+        box-sizing: border-box;
+    }
+
+    .navbar .nav-links .profile-menu-container,
+    .navbar nav .profile-menu-container {
+        width: 100% !important;
+        box-sizing: border-box;
+    }
+
+    /*
+       Remove desktop underline animation inside the stacked
+       mobile menu so it cannot visually cross other content.
+    */
+    .navbar .nav-links a::after,
+    .navbar nav a::after {
+        display: none !important;
+    }
+
+    /* ---------------- PAGE LAYOUT ---------------- */
+
+    .app-layout {
+        display: block !important;
+        width: 100%;
+        min-width: 0;
+        max-width: 100%;
+    }
+
+    .main-content {
+        width: 100%;
+        min-width: 0;
+        max-width: 100%;
+        box-sizing: border-box;
+        padding: 1rem !important;
+    }
+
+    /*
+       Keep page content below the navbar/menu.
+       These z-index values are intentionally lower than the navbar.
+    */
+    .hero-banner,
+    .main-content,
+    .hero-section,
+    .category-tiles,
+    .info-section,
+    .search-filter-bar,
+    .scholarship-grid {
+        position: relative;
+        z-index: 1;
+    }
+
+    /* ---------------- MOBILE SIDEBAR ---------------- */
+
+    /*
+       The original desktop sidebar is replaced by a slide-in drawer.
+       It is hidden off-screen until .sidebar-open is added by JS.
+    */
+    .sidebar {
+        display: block !important;
+        position: fixed !important;
+        top: 0 !important;
+        left: 0 !important;
+
+        width: min(86vw, 340px) !important;
+        height: 100dvh !important;
+        max-height: 100dvh !important;
+
+        margin: 0 !important;
+        padding: 1.25rem !important;
+        box-sizing: border-box;
+
+        overflow-y: auto;
+        overscroll-behavior: contain;
+
+        background: var(--sidebar-bg) !important;
+        border-right: 1px solid var(--border-color);
+
+        transform: translateX(-105%);
+        transition: transform 0.28s ease;
+
+        z-index: 3001 !important;
+        box-shadow: 12px 0 35px rgba(0, 0, 0, 0.25);
+
+        backdrop-filter: blur(12px);
+        -webkit-backdrop-filter: blur(12px);
+    }
+
+    .sidebar.sidebar-open {
+        transform: translateX(0);
+    }
+
+    .sidebar-mobile-header {
+        display: flex !important;
+        align-items: center;
+        justify-content: space-between;
+        gap: 0.75rem;
+        margin-bottom: 1rem;
+    }
+
+    .sidebar-mobile-header h3 {
+        margin: 0;
+    }
+
+    .sidebar-close {
+        border: 0;
+        background: transparent;
+        color: var(--text-color);
+        font-size: 2rem;
+        line-height: 1;
+        cursor: pointer;
+        padding: 0.1rem 0.35rem;
+    }
+
+    .sidebar-overlay {
+        display: block !important;
+        position: fixed !important;
+        inset: 0 !important;
+        background: rgba(0, 0, 0, 0.52) !important;
+
+        opacity: 0;
+        visibility: hidden;
+        pointer-events: none;
+
+        transition: opacity 0.25s ease, visibility 0.25s ease;
+
+        z-index: 3000 !important;
+    }
+
+    .sidebar-overlay.sidebar-overlay-visible {
+        opacity: 1;
+        visibility: visible;
+        pointer-events: auto;
+    }
+
+    .sidebar-toggle {
+        display: inline-flex !important;
+        align-items: center;
+        justify-content: center;
+        gap: 0.5rem;
+
+        position: relative !important;
+        z-index: 10 !important;
+
+        width: calc(100% - 1.5rem);
+        margin: 0.75rem;
+
+        padding: 0.7rem 1rem;
+        border: 0;
+        border-radius: 10px;
+
+        background: var(--primary-color) !important;
+        color: #ffffff !important;
+
+        font: inherit;
+        font-weight: 700;
+        cursor: pointer;
+
+        box-shadow: 0 5px 15px rgba(0, 0, 0, 0.12);
+    }
+
+    /*
+       Do not let the desktop sticky sidebar rules fight with
+       the mobile drawer.
+    */
+    .sidebar {
+        top: 0 !important;
+        height: 100dvh !important;
+    }
+
+    body.sidebar-lock {
+        overflow: hidden !important;
+    }
+
+    /* ---------------- MOBILE HERO / CARDS ---------------- */
+
+    .hero-banner {
+        min-height: 240px;
+        border-radius: 16px;
+    }
+
+    .slide {
+        padding: 1.5rem 12%;
+    }
+
+    .slide h1 {
+        font-size: clamp(1.45rem, 7vw, 2rem);
+    }
+
+    .slide p {
+        font-size: 0.95rem;
+    }
+
+    .hero-deco {
+        font-size: 2.5rem;
+    }
+
+    .hero-deco.small {
+        display: none;
+    }
+
+    .slider-arrow {
+        width: 34px;
+        height: 34px;
+        font-size: 1rem;
+    }
+
+    .category-tiles,
+    .stats-grid,
+    .steps-grid {
+        grid-template-columns: 1fr !important;
+    }
+
+    .search-filter-bar {
+        flex-direction: column !important;
+        width: 100%;
+    }
+
+    .search-filter-bar input,
+    .search-filter-bar select {
+        width: 100% !important;
+        min-width: 0;
+        box-sizing: border-box;
+    }
+
+    /* ---------------- MODAL ---------------- */
+
+    .modal-content {
+        width: calc(100% - 1.5rem) !important;
+        max-width: 100%;
+        max-height: 90dvh;
+        margin: 5vh auto;
+        padding: 1.25rem !important;
+        box-sizing: border-box;
+    }
+}
+
+@media (max-width: 520px) {
+    .navbar {
+        padding: 0.7rem 0.85rem !important;
+    }
+
+    .top-strip {
+        padding: 0.4rem 0.75rem;
+        font-size: 0.72rem;
+    }
+
+    .main-content {
+        padding: 0.75rem !important;
+    }
+
+    .sidebar-toggle {
+        margin-left: 0.75rem;
+        margin-right: 0.75rem;
+        width: calc(100% - 1.5rem);
+    }
+
+    .hero-banner {
+        min-height: 220px;
+    }
+
+    .slide {
+        padding: 1.25rem 11%;
+    }
+
+    .slide h1 {
+        font-size: 1.55rem;
+    }
+
+    .scholarship-hero-box {
+        padding: 1.5rem 1rem;
+    }
+
+    .form-container {
+        padding: 1rem !important;
+    }
+}
