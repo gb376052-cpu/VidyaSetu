@@ -5,6 +5,113 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Saved Scholarships - Vidyasetu</title>
     <link rel="stylesheet" href="style.css">
+    <style>
+        .mobile-menu-btn { display: none; }
+
+        @media (max-width: 900px) {
+            html, body { overflow-x: hidden; }
+
+            .navbar {
+                position: sticky !important;
+                top: 0;
+                z-index: 1000 !important;
+                padding: .75rem 1rem !important;
+                gap: .5rem;
+            }
+
+            .navbar .logo {
+                margin-right: auto;
+                font-size: 1.2rem !important;
+                white-space: nowrap;
+            }
+
+            .mobile-menu-btn {
+                display: inline-flex;
+                align-items: center;
+                justify-content: center;
+                border: 0;
+                background: transparent;
+                color: var(--text-color);
+                font-size: 1.5rem;
+                cursor: pointer;
+                padding: .4rem;
+                line-height: 1;
+            }
+
+            .nav-links {
+                display: none !important;
+                position: absolute;
+                top: 100%;
+                left: .75rem;
+                right: .75rem;
+                flex-direction: column;
+                align-items: stretch !important;
+                gap: .35rem !important;
+                padding: .75rem;
+                flex-wrap: nowrap !important;
+                border-radius: 14px;
+                background: var(--card-bg);
+                border: 1px solid var(--border-color);
+                box-shadow: 0 12px 30px rgba(0,0,0,.15);
+                z-index: 1100;
+            }
+
+            .nav-links.active-mobile-menu { display: flex !important; }
+
+            .nav-links a,
+            .nav-links button,
+            .nav-links .profile-menu-container {
+                width: 100%;
+                box-sizing: border-box;
+            }
+
+            .nav-links a { display: block; padding: .7rem .75rem; }
+
+            .app-layout {
+                display: block !important;
+                width: 100% !important;
+                max-width: 100% !important;
+                box-sizing: border-box;
+                padding: 1rem .75rem !important;
+            }
+
+            .main-content {
+                width: 100% !important;
+                min-width: 0 !important;
+                box-sizing: border-box;
+            }
+
+            .saved-intro {
+                margin-bottom: 1.5rem !important;
+            }
+
+            .saved-intro h1 {
+                font-size: clamp(1.6rem, 7vw, 2rem) !important;
+                line-height: 1.2;
+            }
+
+            .saved-intro p {
+                font-size: .9rem;
+                line-height: 1.5;
+            }
+
+            #savedScholarshipsContainer {
+                grid-template-columns: 1fr !important;
+                gap: 1rem !important;
+                width: 100%;
+            }
+
+            #savedScholarshipsContainer > * {
+                min-width: 0;
+                max-width: 100%;
+            }
+        }
+
+        @media (max-width: 520px) {
+            .navbar { padding: .7rem .85rem !important; }
+            .app-layout { padding: .85rem .75rem 2rem !important; }
+        }
+    </style>
 </head>
 <body>
     <!-- Navbar -->
@@ -12,42 +119,64 @@
         <div class="logo" style="font-size: 1.4rem; font-weight: bold; color: var(--primary-color);">
             <span style="font-size: 1.5rem;">🎯</span> <strong>Vidyasetu</strong>
         </div>
+
+        <button class="mobile-menu-btn" id="mobileMenuBtn" aria-label="Toggle navigation" aria-expanded="false">☰</button>
+
         <nav class="nav-links" style="display: flex; gap: 1.5rem; align-items: center; flex-wrap: wrap;">
             <a href="index.html" style="color: var(--text-color); text-decoration: none; font-weight: 500;">Home</a>
             <a href="dashboard.html" style="color: var(--text-color); text-decoration: none; font-weight: 500;">Dashboard</a>
             <a href="saved.html" class="active" style="color: var(--text-color); text-decoration: none; font-weight: 500;">Saved ⭐</a>
             <a href="quiz.html" style="color: var(--text-color); text-decoration: none; font-weight: 500;">Eligibility Quiz</a>
             <a href="deadlines.html" style="color: var(--text-color); text-decoration: none; font-weight: 500;">Deadlines ⏳</a>
-            
             <button id="themeToggleBtn" class="theme-btn" title="Toggle Theme" style="background: none; border: none; cursor: pointer; font-size: 1.2rem;">🌙</button>
             <div id="authLinkContainer" class="profile-menu-container"></div>
         </nav>
     </header>
 
-    <!-- Main Content Layout -->
     <div class="app-layout" style="display: flex; padding: 2rem; max-width: 1200px; margin: 0 auto; width: 100%;">
         <main class="main-content" style="width: 100%;">
-            <div style="margin-bottom: 2rem; text-align: center;">
+            <div class="saved-intro" style="margin-bottom: 2rem; text-align: center;">
                 <h1 style="font-size: 2rem; font-weight: 800; color: var(--text-color); margin-bottom: 0.5rem;">Saved Scholarships ⭐</h1>
-                <p style="color: var(--text-secondary);">Aapke bookmark kiye gaye scholarships ki list yahan dikhegi.</p>
+                <p style="color: var(--text-secondary);">Your bookmarked scholarships will appear here.</p>
             </div>
 
-            <!-- Saved Scholarships Container jahan cards dynamically load honge -->
-            <div id="savedScholarshipsContainer" class="scholarship-grid" style="display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 1.5rem;">
-                <!-- JavaScript yahan cards insert karega -->
-            </div>
+            <div id="savedScholarshipsContainer" class="scholarship-grid" style="display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 1.5rem;"></div>
         </main>
     </div>
 
-    <!-- Script file -->
     <script src="script.js"></script>
     <script>
-        // Page load hote hi saved scholarships ko render karne ke liye
         document.addEventListener('DOMContentLoaded', () => {
             if (typeof loadSavedScholarships === 'function') {
                 loadSavedScholarships();
             }
         });
+
+        (() => {
+            const btn = document.getElementById('mobileMenuBtn');
+            const nav = document.querySelector('.nav-links');
+
+            if (btn && nav) {
+                btn.addEventListener('click', () => {
+                    const open = nav.classList.toggle('active-mobile-menu');
+                    btn.setAttribute('aria-expanded', String(open));
+                });
+
+                nav.querySelectorAll('a').forEach(link => {
+                    link.addEventListener('click', () => {
+                        nav.classList.remove('active-mobile-menu');
+                        btn.setAttribute('aria-expanded', 'false');
+                    });
+                });
+            }
+
+            window.addEventListener('resize', () => {
+                if (window.innerWidth > 900) {
+                    nav?.classList.remove('active-mobile-menu');
+                    btn?.setAttribute('aria-expanded', 'false');
+                }
+            });
+        })();
     </script>
 </body>
 </html>
