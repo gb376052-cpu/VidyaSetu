@@ -1,0 +1,135 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Deadlines - Vidyasetu</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <header class="navbar">
+        <div class="logo"><span>🎯</span> Vidya<span>setu</span></div>
+
+        <button class="mobile-menu-btn" id="mobileMenuBtn" aria-label="Toggle navigation" aria-expanded="false">☰</button>
+
+        <nav class="nav-links" id="navLinks">
+            <a href="index.html">Home</a>
+            <a href="dashboard.html">Dashboard</a>
+            <a href="saved.html">Saved ⭐</a>
+            <a href="quiz.html">Eligibility Quiz</a>
+            <a href="deadlines.html" class="active">Deadlines ⏳</a>
+            <button id="themeToggleBtn" class="theme-btn" title="Toggle Theme">🌙</button>
+            <div id="authLinkContainer" class="profile-menu-container"></div>
+        </nav>
+    </header>
+
+    <div class="app-layout">
+        <main class="main-content" style="max-width: 1200px; margin: 0 auto; width: 100%;">
+            <section class="directory-section">
+                <h1 style="font-size: 2rem; font-weight: 800; margin-bottom: 0.4rem;">Scholarship Deadlines ⏳</h1>
+                <p style="color: var(--text-secondary); margin-bottom: 1.5rem;">Scholarships that are closing soon will be displayed at the top.</p>
+
+                <div class="search-filter-bar">
+                    <input type="text" id="deadlineSearch" placeholder="Search scholarship name or provider...">
+                    <select id="deadlineFilter">
+                        <option value="open">Open (you can apply now)</option>
+                        <option value="soon">Closing Soon (under 30 days)</option>
+                        <option value="closed">Closed</option>
+                        <option value="all">All</option>
+                    </select>
+                </div>
+
+                <div id="deadlinesContainer" class="scholarship-grid"></div>
+            </section>
+        </main>
+    </div>
+
+    <div id="scholarshipModal" class="modal">
+        <div class="modal-content">
+            <span class="close-btn">&times;</span>
+            <div id="modalBody"></div>
+        </div>
+    </div>
+    <div class="toast" id="toast"></div>
+
+    <script src="script.js"></script>
+    <script>
+    (() => {
+        // ---- mobile menu ----
+        const menuBtn = document.getElementById('mobileMenuBtn');
+        const nav = document.getElementById('navLinks');
+        if (menuBtn && nav) {
+            menuBtn.addEventListener('click', () => {
+                const open = nav.classList.toggle('active-mobile-menu');
+                menuBtn.setAttribute('aria-expanded', String(open));
+            });
+        }
+
+        // ---- deadlines list ----
+        const container = document.getElementById('deadlinesContainer');
+        const searchEl = document.getElementById('deadlineSearch');
+        const filterEl = document.getElementById('deadlineFilter');
+
+        function daysLeft(sch) {
+            const d = parseDeadline(sch.deadline);
+            if (!d) return null;
+            const today = new Date();
+            today.setHours(0, 0, 0, 0);
+            return Math.round((d - today) / 86400000);
+        }
+
+        function render() {
+            const q = searchEl.value.trim().toLowerCase();
+            const mode = filterEl.value;
+
+            const list = scholarshipDatabase
+                .filter(s => {
+                    const left = daysLeft(s);
+                    if (left === null) return false;
+                    const matchesQ = !q || s.title.toLowerCase().includes(q) || s.provider.toLowerCase().includes(q);
+                    const matchesMode =
+                        mode === 'all' ||
+                        (mode === 'open' && left >= 0) ||
+                        (mode === 'soon' && left >= 0 && left <= 30) ||
+                        (mode === 'closed' && left < 0);
+                    return matchesQ && matchesMode;
+                })
+                .sort((a, b) => daysLeft(a) - daysLeft(b));
+
+            if (list.length === 0) {
+                container.innerHTML = '<p class="no-match">No scholarships match your criteria.</p>';
+                return;
+            }
+
+            const bookmarks = getSavedBookmarks();
+            container.innerHTML = list.map(sch => `
+                <div class="scholarship-card" onclick="openDetailsModal(${sch.id})">
+                    <div>
+                        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem;">
+                            <span class="badge" style="margin-bottom: 0;">${sch.provider}</span>
+                            ${bookmarkButton(sch.id, bookmarks.includes(sch.id))}
+                        </div>
+                        <h3>${sch.title}</h3>
+                        ${deadlineHTML(sch)}
+                    </div>
+                    <button class="btn-apply" onclick="event.stopPropagation(); openDetailsModal(${sch.id})">View Details &amp; How to Apply &rarr;</button>
+                </div>
+            `).join('');
+        }
+
+        searchEl.addEventListener('input', render);
+        filterEl.addEventListener('change', render);
+
+        // bookmark dabane par yahi list refresh ho
+        const origRefresh = window.refreshAfterBookmarkChange;
+        window.refreshAfterBookmarkChange = function () {
+            if (typeof origRefresh === 'function') origRefresh();
+            render();
+        };
+
+        render();
+    })();
+    </script>
+</body>
+</html>

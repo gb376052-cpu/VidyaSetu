@@ -1,0 +1,175 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Eligibility Quiz - Vidyasetu</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <header class="navbar">
+        <div class="logo"><span>🎯</span> Vidya<span>setu</span></div>
+
+        <button class="mobile-menu-btn" id="mobileMenuBtn" aria-label="Toggle navigation" aria-expanded="false">☰</button>
+
+        <nav class="nav-links" id="navLinks">
+            <a href="index.html">Home</a>
+            <a href="dashboard.html">Dashboard</a>
+            <a href="saved.html">Saved ⭐</a>
+            <a href="quiz.html" class="active">Eligibility Quiz</a>
+            <a href="deadlines.html">Deadlines ⏳</a>
+            <button id="themeToggleBtn" class="theme-btn" title="Toggle Theme">🌙</button>
+            <div id="authLinkContainer" class="profile-menu-container"></div>
+        </nav>
+    </header>
+
+    <div class="app-layout">
+        <main class="main-content" style="max-width: 1200px; margin: 0 auto; width: 100%;">
+            <section class="directory-section">
+                <h1 style="font-size: 2rem; font-weight: 800; margin-bottom: 0.4rem;">Eligibility Quiz 🎯</h1>
+                <p style="color: var(--text-secondary); margin-bottom: 1.5rem;">Bina login ke 5 sawaalon ke jawab do aur dekho kaun si scholarships aapke liye 100% eligible hain.</p>
+
+                <div class="form-container" style="max-width: 640px; margin: 0 auto 2rem;">
+                    <form id="quizForm">
+                        <div class="input-group">
+                            <label for="qState">State of Domicile</label>
+                            <select id="qState" required>
+                                <option value="">Select your state</option>
+                                <option value="All-India">All-India / Other</option>
+                                <option value="Uttar Pradesh">Uttar Pradesh</option>
+                                <option value="Uttarakhand">Uttarakhand</option>
+                                <option value="Delhi">Delhi</option>
+                                <option value="Bihar">Bihar</option>
+                                <option value="Maharashtra">Maharashtra</option>
+                                <option value="Karnataka">Karnataka</option>
+                                <option value="Andhra Pradesh">Andhra Pradesh</option>
+                                <option value="Gujarat">Gujarat</option>
+                                <option value="Haryana">Haryana</option>
+                                <option value="Jharkhand">Jharkhand</option>
+                                <option value="Madhya Pradesh">Madhya Pradesh</option>
+                                <option value="Odisha">Odisha</option>
+                                <option value="Punjab">Punjab</option>
+                                <option value="Rajasthan">Rajasthan</option>
+                                <option value="Telangana">Telangana</option>
+                                <option value="West Bengal">West Bengal</option>
+                            </select>
+                        </div>
+                        <div class="input-group">
+                            <label for="qCategory">Category</label>
+                            <select id="qCategory" required>
+                                <option value="">Select category</option>
+                                <option value="General">General</option>
+                                <option value="OBC">OBC</option>
+                                <option value="SC">SC</option>
+                                <option value="ST">ST</option>
+                                <option value="Minority">Minority</option>
+                            </select>
+                        </div>
+                        <div class="input-group">
+                            <label for="qCourse">Current Course / Class</label>
+                            <select id="qCourse" required>
+                                <option value="">Select current education level</option>
+                                <option value="Class 9">Class 9</option>
+                                <option value="Class 10">Class 10</option>
+                                <option value="Class 11">Class 11</option>
+                                <option value="Class 12">Class 12</option>
+                                <option value="BCA">BCA (Bachelor of Computer Applications)</option>
+                                <option value="BTech">B.Tech / Engineering</option>
+                                <option value="BSc">B.Sc / Science</option>
+                                <option value="Diploma">Polytechnic Diploma</option>
+                                <option value="Post Graduation">Post Graduation</option>
+                            </select>
+                        </div>
+                        <div class="input-group">
+                            <label for="qPercentage">Last Exam Percentage (%)</label>
+                            <input type="number" step="0.1" min="0" max="100" id="qPercentage" placeholder="e.g. 75.5" required>
+                        </div>
+                        <div class="input-group">
+                            <label for="qIncome">Annual Family Income (₹)</label>
+                            <input type="number" min="0" id="qIncome" placeholder="e.g. 250000" required>
+                        </div>
+                        <button type="submit" class="btn-primary full-width">Check My Eligibility 🎉</button>
+                    </form>
+                </div>
+
+                <div id="quizResultsWrap" style="display: none;">
+                    <h2>You are eligible for <span id="quizCount">0</span> scholarship(s)</h2>
+                    <div id="quizResults" class="scholarship-grid"></div>
+                </div>
+            </section>
+        </main>
+    </div>
+
+    <div id="scholarshipModal" class="modal">
+        <div class="modal-content">
+            <span class="close-btn">&times;</span>
+            <div id="modalBody"></div>
+        </div>
+    </div>
+    <div class="toast" id="toast"></div>
+
+    <script src="script.js"></script>
+    <script>
+    (() => {
+        // ---- mobile menu ----
+        const menuBtn = document.getElementById('mobileMenuBtn');
+        const nav = document.getElementById('navLinks');
+        if (menuBtn && nav) {
+            menuBtn.addEventListener('click', () => {
+                const open = nav.classList.toggle('active-mobile-menu');
+                menuBtn.setAttribute('aria-expanded', String(open));
+            });
+        }
+
+        // ---- quiz ----
+        const form = document.getElementById('quizForm');
+        const wrap = document.getElementById('quizResultsWrap');
+        const results = document.getElementById('quizResults');
+        const countEl = document.getElementById('quizCount');
+
+        // Profile bana hai to form pehle se bhar do
+        const p = getProfile();
+        if (p) {
+            document.getElementById('qState').value = p.state || '';
+            document.getElementById('qCategory').value = p.category || '';
+            document.getElementById('qCourse').value = p.course || '';
+            document.getElementById('qPercentage').value = p.percentage || '';
+            document.getElementById('qIncome').value = p.income || '';
+        }
+
+        form.addEventListener('submit', e => {
+            e.preventDefault();
+            const user = {
+                state: document.getElementById('qState').value,
+                category: document.getElementById('qCategory').value,
+                course: document.getElementById('qCourse').value,
+                percentage: parseFloat(document.getElementById('qPercentage').value),
+                income: parseFloat(document.getElementById('qIncome').value)
+            };
+
+            const matches = scholarshipDatabase.filter(sch =>
+                user.income <= sch.maxIncome &&
+                user.percentage >= sch.minPercentage &&
+                sch.eligibleCourses.includes(user.course) &&
+                (sch.state === 'All-India' || sch.state.toLowerCase() === user.state.toLowerCase()) &&
+                (sch.category === 'General' || sch.category.toLowerCase() === user.category.toLowerCase())
+            );
+
+            countEl.textContent = matches.length;
+            renderMatchedCards(matches, results);
+            wrap.style.display = 'block';
+            wrap.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        });
+
+        // bookmark dabane par results wahi rahein, bas star update ho
+        let lastMatches = null;
+        const origRefresh = window.refreshAfterBookmarkChange;
+        window.refreshAfterBookmarkChange = function () {
+            if (typeof origRefresh === 'function') origRefresh();
+            if (wrap.style.display === 'block') form.dispatchEvent(new Event('submit', { cancelable: true }));
+        };
+    })();
+    </script>
+</body>
+</html>
