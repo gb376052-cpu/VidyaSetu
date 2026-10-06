@@ -2207,7 +2207,7 @@ function loadSavedScholarships() {
                 ${deadlineHTML(sch)}
             </div>
             <div style="display: flex; gap: 10px;">
-                <button class="btn-apply" style="flex: 1;" onclick="event.stopPropagation(); openDetailsModal(${sch.id})">View Details</button>
+                <button class="btn-apply" style="flex: 1;" onclick="event.stopPropagation(); openDetailsModal(${sch.id})">View Details &amp; How to Apply</button>
                 <button class="btn-secondary-small" style="width: auto; padding: 0.5rem 0.9rem;" title="Remove" onclick="toggleBookmark(${sch.id}, event)">🗑️</button>
             </div>
         </div>
@@ -2339,6 +2339,8 @@ window.filterByCourse = function (courseName) {
 window.filterByCategory = function (categoryName) {
     const providerFilter = document.getElementById("filterProvider");
     if (providerFilter) providerFilter.value = categoryName;
+        const dashProvider = document.getElementById("dashCategoryFilter");
+    if (dashProvider) dashProvider.value = categoryName;
     activeCourse = "";
 
     if (document.getElementById("allScholarshipsContainer")) {
@@ -2371,7 +2373,19 @@ function runMatchingEngine(profile) {
     const query = queryEl ? queryEl.value.trim().toLowerCase() : "";
     const provider = catEl ? catEl.value : "";
 
+       const browsing = !!activeCourse;   // sidebar se course chuna hai -> us course ki saari scholarships dikhao
+
     const eligibleList = scholarshipDatabase.filter(sch => {
+        const matchesQuery = !query ||
+            sch.title.toLowerCase().includes(query) ||
+            sch.provider.toLowerCase().includes(query);
+        const matchesProvider = !provider || sch.provider === provider;
+
+        if (browsing) {
+            const matchesSidebar = sch.eligibleCourses.some(c => c.toLowerCase() === activeCourse.toLowerCase());
+            return matchesQuery && matchesProvider && matchesSidebar;
+        }
+
         const incomeMatch = profile.income <= sch.maxIncome;
         const percentageMatch = profile.percentage >= sch.minPercentage;
         const courseMatch = sch.eligibleCourses.includes(profile.course);
@@ -2380,21 +2394,14 @@ function runMatchingEngine(profile) {
         const categoryMatch = sch.category === "General" ||
             sch.category.toLowerCase() === String(profile.category).toLowerCase();
 
-        const matchesQuery = !query ||
-            sch.title.toLowerCase().includes(query) ||
-            sch.provider.toLowerCase().includes(query);
-        const matchesProvider = !provider || sch.provider === provider;
-        const matchesSidebar = !activeCourse ||
-            sch.eligibleCourses.some(c => c.toLowerCase() === activeCourse.toLowerCase());
-
         return incomeMatch && percentageMatch && courseMatch && stateMatch &&
-            categoryMatch && matchesQuery && matchesProvider && matchesSidebar;
+            categoryMatch && matchesQuery && matchesProvider;
     });
 
     const container = document.getElementById("scholarshipsContainer");
-    renderMatchedCards(eligibleList, container);
+    if (browsing) renderScholarshipGrid(eligibleList, container);
+    else renderMatchedCards(eligibleList, container);
     if (container) updateFilterBar(container, eligibleList.length);
-
     const countEl = document.getElementById("matchCount");
     if (countEl) countEl.textContent = eligibleList.length;
 }
